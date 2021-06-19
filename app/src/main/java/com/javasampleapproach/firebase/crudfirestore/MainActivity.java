@@ -2,6 +2,8 @@ package com.javasampleapproach.firebase.crudfirestore;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +36,14 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        mShowBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ShowActivity.class));
+            }
+        });
+
+
         mSaveBtn.setOnClickListener(new View.OnClickListener(){
             // ctrl+o / alt+insert => to create override
             @Override
@@ -49,13 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveToFireStore(String id, String title, String desc){
 
+        // data yang di query
         if (!title.isEmpty() && !desc.isEmpty()){
             HashMap<String, Object> map = new HashMap<>();
             map.put("id", id);
             map.put("title", title);
             map.put("desc", desc);
 
-            db.collection("Add Data").document(id).set(map)
+            // mengirim data
+            db.collection("Documents").document(id).set(map)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

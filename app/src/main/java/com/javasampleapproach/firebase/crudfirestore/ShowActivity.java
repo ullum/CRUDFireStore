@@ -45,7 +45,7 @@ public class ShowActivity extends AppCompatActivity {
         showData();
     }
 
-    private void showData(){
+    public void showData(){
 
         db.collection("Documents").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

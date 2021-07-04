@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mTitle, mDesc;
     private Button mSaveBtn, mShowBtn;
     private FirebaseFirestore db;
+    private String uTitle, uDesc, uId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,18 @@ public class MainActivity extends AppCompatActivity {
         mShowBtn = findViewById(R.id.showall_btn);
 
         db = FirebaseFirestore.getInstance();
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            mSaveBtn.setText("Update");
+            uTitle = bundle.getString("uTitle");
+            uId = bundle.getString("uId");
+            uDesc = bundle.getString("uDesc");
+            mTitle.setText(uTitle);
+            mDesc.setText(uDesc);
+        }else{
+            mSaveBtn.setText("Save");
+        }
 
         mShowBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -50,9 +63,36 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String title = mTitle.getText().toString();
                 String desc = mDesc.getText().toString();
-                String id = UUID.randomUUID().toString();
 
-                saveToFireStore(id, title, desc);
+                Bundle bundle1 = getIntent().getExtras();
+                if (bundle1 != null){
+                    String id = uId;
+                    updateToFireStore(id, title, desc);
+                }else{
+                    String id = UUID.randomUUID().toString();
+                    saveToFireStore(id, title, desc);
+                }
+
+            }
+        });
+    }
+
+    private void updateToFireStore(String id, String title, String desc){
+
+        db.collection("Documents").document(id).update("title", title, "desc", desc)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Toast.makeText(MainActivity.this, "Data Update!!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(MainActivity.this, "Error : " + task.getException().getMessage() , Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

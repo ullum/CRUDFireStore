@@ -1,5 +1,7 @@
 package com.javasampleapproach.firebase.crudfirestore;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyAdapter(ShowActivity activity, List<Model> mList){
         this.activity = activity;
         this.mList = mList;
+    }
+
+    public void updateData(int posistion){
+        Model item = mList.get(posistion);
+        Bundle bundle = new Bundle();
+        bundle.putString("uId", item.getId());
+        bundle.putString("uTitle", item.getTitle());
+        bundle.putString("uDesc", item.getDesc());
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+
     }
 
     @NonNull
